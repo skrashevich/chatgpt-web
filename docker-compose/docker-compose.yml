@@ -2,9 +2,8 @@ version: '3'
 
 services:
   app:
-    image: chenzhaoyu94/chatgpt-web # 总是使用latest,更新时重新pull该tag镜像即可
-    ports:
-      - 3002:3002
+    image: skrashevich/chatgpt-web:latest
+    restart: always
     environment:
       # 二选一
       OPENAI_API_KEY: xxxx
@@ -23,13 +22,4 @@ services:
       # Socks代理端口，可选，和 SOCKS_PROXY_HOST 一起时生效
       SOCKS_PROXY_PORT: xxxx
   nginx:
-    build: nginx
-    image: chatgpt/nginx
-    ports:
-      - '80:80'
-    expose:
-      - '80'
-    volumes:
-      - ./nginx/html/:/etc/nginx/html/
-    links:
-      - app
+    image: skrashevich/chatgpt-web:nginx
