@@ -54,6 +54,7 @@ const languageOptions: { label: string; key: Language; value: Language }[] = [
   { label: '简体中文', key: 'zh-CN', value: 'zh-CN' },
   { label: '繁體中文', key: 'zh-TW', value: 'zh-TW' },
   { label: 'English', key: 'en-US', value: 'en-US' },
+  { label: 'Russian', key: 'ru-RU', value: 'ru-RU' },
 ]
 
 function updateUserInfo(options: Partial<UserInfo>) {

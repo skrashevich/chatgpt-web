@@ -3,12 +3,21 @@ import { createI18n } from 'vue-i18n'
 import enUS from './en-US'
 import zhCN from './zh-CN'
 import zhTW from './zh-TW'
+import ruRU from './ru-RU'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import type { Language } from '@/store/modules/app/helper'
 
 const appStore = useAppStoreWithOut()
 
-const defaultLocale = appStore.language || 'zh-CN'
+// Get the default locale from the browser language
+const langMap: Record<string, string> = {
+  'en': 'en-US',
+  'zh-CN': 'zh-CN',
+  'zh-TW': 'zh-TW',
+  'ru': 'ru-RU',
+}
+
+const defaultLocale = appStore.language || langMap[navigator.language] || 'en-US'
 
 const i18n = createI18n({
   locale: defaultLocale,
@@ -18,6 +27,7 @@ const i18n = createI18n({
     'en-US': enUS,
     'zh-CN': zhCN,
     'zh-TW': zhTW,
+    'ru-RU': ruRU,
   },
 })
 
