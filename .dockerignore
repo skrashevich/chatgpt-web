@@ -1,3 +1,5 @@
+**/node_modules
+*/node_modules
 node_modules
 Dockerfile
 .git
@@ -6,3 +8,5 @@ Dockerfile
 .vscode
 .pnpm-store
 dist
+.*
+*/.*
