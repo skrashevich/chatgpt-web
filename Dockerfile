@@ -1,40 +1,54 @@
 # syntax = docker/dockerfile-upstream:master-labs
 
 # build front-end
-FROM --platform=${BUILDPLATFORM} node:lts-alpine AS builder
+FROM --platform=${BUILDPLATFORM} node:lts-alpine AS frontend
+RUN npm install pnpm -g
 
-COPY ./ /app
 WORKDIR /app
 
-RUN npm install pnpm -g
+COPY ./package.json /app
+COPY ./pnpm-lock.yaml /app
+
 RUN --mount=type=cache,target=/app/.pnpm-store pnpm install
-ENV NODE_ENV=production
+
+ADD . /app
+
 RUN --mount=type=cache,target=/app/.pnpm-store pnpm run build
 RUN wget https://gobinaries.com/tj/node-prune --output-document - | /bin/sh
 RUN node-prune
 
-# build nginx
-FROM nginxinc/nginx-unprivileged:latest as nginx
+# build backend
+FROM node:lts-alpine as backend
 
-ADD ./docker-compose/nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder --link /app/dist/ /usr/share/nginx/html/
-EXPOSE 8080
+RUN npm install pnpm -g
 
-CMD ["nginx", "-g", "daemon off;"]
-
-
-# service-builder
-FROM --platform=${BUILDPLATFORM} node:lts-alpine as service-builder
-
-ADD ./service /app
-ENV NODE_ENV=production
 WORKDIR /app
-RUN --mount=type=cache,target=/app/.pnpm-store npm install pnpm -g
+
+COPY /service/package.json /app
+COPY /service/pnpm-lock.yaml /app
+
 RUN --mount=type=cache,target=/app/.pnpm-store pnpm install
+
+ADD /service /app
+
+RUN --mount=type=cache,target=/app/.pnpm-store pnpm build
 RUN wget https://gobinaries.com/tj/node-prune --output-document - | /bin/sh
 RUN node-prune
 
-FROM node:lts-alpine as service
-COPY --from=service-builder --link /app /app
+# service
+FROM node:lts-alpine
+RUN npm install pnpm -g
 WORKDIR /app
-CMD ["npm", "run", "start"]
+COPY /service/package.json /app
+COPY /service/pnpm-lock.yaml /app
+
+RUN --mount=type=cache,target=/app/.pnpm-store pnpm install --production && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
+
+ADD /service /app
+
+COPY --link --from=frontend /app/dist /app/public
+COPY --link --from=backend /app/build /app/build
+
+EXPOSE 3002
+
+CMD ["pnpm", "run", "prod"]
