@@ -35,8 +35,13 @@ RUN --mount=type=cache,target=/app/.pnpm-store pnpm build
 RUN wget https://gobinaries.com/tj/node-prune --output-document - | /bin/sh
 RUN node-prune
 
+FROM nginxinc/nginx-unprivileged:latest AS nginx
+ADD ./docker-compose/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --link --from=frontend /app/dist /usr/share/nginx/html
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:8080/ || exit 1
+
 # service
-FROM node:lts-alpine
+FROM node:lts-alpine AS service
 RUN npm install pnpm -g
 WORKDIR /app
 COPY /service/package.json /app
@@ -50,5 +55,6 @@ COPY --link --from=frontend /app/dist /app/public
 COPY --link --from=backend /app/build /app/build
 
 EXPOSE 3002
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD wget 'http://localhost:3002/config' --post-data '{}' --header 'Content-Type: application/json' -O- || exit 1
 
 CMD ["pnpm", "run", "prod"]
