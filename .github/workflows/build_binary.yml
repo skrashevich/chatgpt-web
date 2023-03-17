@@ -3,7 +3,7 @@ name: Build and Release Binaries
 on:
   push:
     branches:
-      - goservice
+      - main
   workflow_dispatch:
 
 jobs:
