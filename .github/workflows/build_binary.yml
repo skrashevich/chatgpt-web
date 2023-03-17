@@ -90,8 +90,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: goservice-nightly
-          name: chatgpt-web goservice nightly
+          tag_name: ${{ github.head_ref || github.ref_name }}-nightly
+          name: chatgpt-web ${{ github.head_ref || github.ref_name }} nightly
           prerelease: true
           body: ${{ env.CHANGELOG }}
           files: |
