@@ -46,7 +46,7 @@ onMounted(() => {
       </h2>
       <div class="p-2 space-y-2 rounded-md bg-neutral-100 dark:bg-neutral-700">
         <p>
-          此项目开源于
+          This project is open source in
           <a
             class="text-blue-600 dark:text-blue-500"
             href="https://github.com/Chanzhaoyu/chatgpt-web"
@@ -54,7 +54,8 @@ onMounted(() => {
           >
             Github
           </a>
-          ，免费且基于 MIT 协议，没有任何形式的付费行为！
+          ，free and based on the MIT protocol, without any form of paid behavior!
+          If you think this project is helpful to you, please help me order a Star or give me some sponsorship on Github. Thank you!
         </p>
         <p>
           如果你觉得此项目对你有帮助，请在 Github 帮我点个 Star 或者给予一点赞助，谢谢！
