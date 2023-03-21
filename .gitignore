@@ -31,3 +31,4 @@ coverage
 .pnpm-store
 # Environment variables files
 /service/.env
+*.sqlite
