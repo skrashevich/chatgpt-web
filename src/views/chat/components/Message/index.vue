@@ -7,6 +7,7 @@ import { SvgIcon } from '@/components/common'
 import { copyText } from '@/utils/format'
 import { useIconRender } from '@/hooks/useIconRender'
 import { t } from '@/locales'
+import { useBasicLayout } from '@/hooks/useBasicLayout'
 
 interface Props {
   dateTime?: string
@@ -25,11 +26,15 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
 
+const { isMobile } = useBasicLayout()
+
 const { iconRender } = useIconRender()
 
 const textRef = ref<HTMLElement>()
 
 const asRawText = ref(props.inversion)
+
+const messageRef = ref<HTMLElement>()
 
 const options = computed(() => {
   const common = [
@@ -70,12 +75,17 @@ function handleSelect(key: 'copyText' | 'delete' | 'toggleRenderType') {
 }
 
 function handleRegenerate() {
+  messageRef.value?.scrollIntoView()
   emit('regenerate')
 }
 </script>
 
 <template>
-  <div class="flex w-full mb-6 overflow-hidden" :class="[{ 'flex-row-reverse': inversion }]">
+  <div
+    ref="messageRef"
+    class="flex w-full mb-6 overflow-hidden"
+    :class="[{ 'flex-row-reverse': inversion }]"
+  >
     <div
       class="flex items-center justify-center flex-shrink-0 h-8 overflow-hidden rounded-full basis-8"
       :class="[inversion ? 'ml-2' : 'mr-2']"
@@ -106,7 +116,12 @@ function handleRegenerate() {
           >
             <SvgIcon icon="ri:restart-line" />
           </button>
-          <NDropdown :placement="!inversion ? 'right' : 'left'" :options="options" @select="handleSelect">
+          <NDropdown
+            :trigger="isMobile ? 'click' : 'hover'"
+            :placement="!inversion ? 'right' : 'left'"
+            :options="options"
+            @select="handleSelect"
+          >
             <button class="transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
               <SvgIcon icon="ri:more-2-fill" />
             </button>

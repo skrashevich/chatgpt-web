@@ -28,6 +28,7 @@ export default {
     unauthorizedTips: '未經授權，請先進行驗證。',
   },
   chat: {
+    newChatButton: '新建對話',
     placeholder: '來說點什麼...（Shift + Enter = 換行）',
     placeholderMobile: '來說點什麼...',
     copy: '複製',
@@ -52,10 +53,12 @@ export default {
   setting: {
     setting: '設定',
     general: '總覽',
+    advanced: '高級',
     config: '設定',
     avatarLink: '頭貼連結',
     name: '名稱',
     description: '描述',
+    role: '角色設定',
     resetUserInfo: '重設使用者資訊',
     chatHistory: '紀錄',
     theme: '主題',
@@ -68,6 +71,7 @@ export default {
     balance: 'API余額',
   },
   store: {
+    siderButton: '提示詞商店',
     local: '本機',
     online: '線上',
     title: '標題',
