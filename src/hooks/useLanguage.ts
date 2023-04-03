@@ -21,7 +21,7 @@ export function useLanguage() {
         setLocale('ru-RU')
         return ruRU
       default:
-        setLocale('en-US')
+        setLocale('zh-CN')
         return enUS
     }
   })

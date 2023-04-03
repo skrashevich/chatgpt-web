@@ -5,6 +5,7 @@ on:
     branches:
       - '*'
   workflow_dispatch:
+    
 
 jobs:
   build:
@@ -27,33 +28,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Login to Dockerhub
-        uses: docker/login-action@v1
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Create short sha and tag
         shell: bash
         run: |
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
           if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then echo TAG=latest; else echo TAG="${GITHUB_REF##*/}"; fi >> $GITHUB_ENV
           if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then echo NGINXTAG=nginx; else echo NGINXTAG="nginx-${GITHUB_REF##*/}"; fi >> $GITHUB_ENV
-          if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then echo LEGACYTAG=legacy; else echo LEGACYTAG="legacy-${GITHUB_REF##*/}"; fi >> $GITHUB_ENV
-      - name: Build Docker Image with goservice
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          target: goservice
-          tags: |
-            ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.SHORT_SHA }}
-            ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ env.SHORT_SHA }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ env.TAG }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
       - name: Build Nginx Docker Image
         uses: docker/build-push-action@v2
         with:
@@ -62,10 +42,10 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.NGINXTAG }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Build Legacy Docker Image
+      - name: Build Docker Image
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -73,7 +53,7 @@ jobs:
           target: service
           tags: |
             ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.SHORT_SHA }}
-            ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.LEGACYTAG }}
-          platforms: linux/amd64
+            ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.TAG }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           cache-from: type=gha
           cache-to: type=gha,mode=max
